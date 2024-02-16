@@ -113,10 +113,7 @@ def create_organization_adjusted(brand, portals_content):
     if not organization["identifier"]:
         del organization["identifier"]
     if portal.get("endpoint_ids"):
-        organization["endpoint"] = [{
-                    "url": "portalEndpoint",
-                    "valueReference": {"reference": f"Endpoint/{endpoint_id}"}
-                } for  endpoint_id in portal.get("endpoint_ids")]
+        organization["endpoint"] = [{ "reference": f"Endpoint/{endpoint_id}" } for endpoint_id in portal.get("endpoint_ids")]
 
 
     return organization
