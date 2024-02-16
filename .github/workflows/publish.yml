@@ -19,12 +19,17 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: '3.x'  # Set this to the version you need
-
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '18'  # Set this to the version you need
+      - name: Install dependencies
+        run: npm ci
+      - name: Build Svelte app
+        run: npm run build
       - name: Run transform script
         run: |
-          mkdir -p build
           python transform.py ./fasten-sources/catalog/ > build/bundle.json
-
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
