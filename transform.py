@@ -136,6 +136,8 @@ def create_endpoint(endpoint):
         endpoint_resource["name"] = endpoint.get("name")
     if endpoint.get("registration_endpoint"):
         endpoint_resource["contact"].append({"system": "url", "value": endpoint["registration_endpoint"]})
+    if not endpoint_resource["contact"]:
+        del endpoint_resource["contact"]
 
     return endpoint_resource
 
