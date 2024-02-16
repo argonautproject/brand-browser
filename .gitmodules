@@ -1,0 +1,3 @@
+[submodule "fasten-sources"]
+	path = fasten-sources
+	url = https://github.com/fastenhealth/fasten-sources.git
