@@ -7,12 +7,14 @@ on:
 
 jobs:
   build-and-deploy:
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-
+        with:
+          submodules: true
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
@@ -21,7 +23,7 @@ jobs:
       - name: Run transform script
         run: |
           mkdir -p build
-          python transform.py > build/bundle.json
+          python transform.py ./fasten-sources/catalog/ > build/bundle.json
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
