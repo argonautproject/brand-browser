@@ -47,7 +47,7 @@
   $effect(async () => {
     store = await getBrands(
         // use a ?bundle=https://   param if present or default to joshuamandel
-        new URLSearchParams(window.location.search).get("bundle") || "https://joshuamandel.com/pab-from-fasten/bundle.json"
+        new URLSearchParams(window.location.search).get("bundle") || "https://joshuamandel.com/pab-viewer/bundle.json"
     );
     console.log("Assigned db");
   });

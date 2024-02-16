@@ -148,20 +148,21 @@ def main(directory_path):
         "id": "smart-patient-access-brand-bundle-form-fasten",
         "type": "collection",
         "timestamp": "2024-02-16T00:00:00Z",
+        "meta": {"source": "https://github.com/fastenhealth/fasten-sources/tree/main/catalog"},
         "entry": []
     }
 
     for brand_id, brand in brands_content.items():
         organization = create_organization_adjusted(brand, portals_content)
         brand_bundle["entry"].append({
-            "fullUrl": f"https://jmandel.github.io/pab-from-fasten/Organization/{organization['id']}",
+            "fullUrl": f"https://jmandel.github.io/pab-viewer/Organization/{organization['id']}",
             "resource": organization
         })
 
     for endpoint_id, endpoint in endpoints_content.items():
         endpoint_resource = create_endpoint(endpoint)
         brand_bundle["entry"].append({
-            "fullUrl": f"https://jmandel.github.io/pab-from-fasten/Endpoint/{endpoint_resource['id']}",
+            "fullUrl": f"https://jmandel.github.io/pab-viewer/Endpoint/{endpoint_resource['id']}",
             "resource": endpoint_resource})
 
     print(json.dumps(brand_bundle, indent=2))
