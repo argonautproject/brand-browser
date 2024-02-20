@@ -27,7 +27,10 @@
 
     {#if organization.address}
       <address>
-        {#each organization.address as address}
+        {#each organization.address as address, i}
+            {#if i > 0}
+            <hr style="width: 20px; display: inline-block"/>
+            {/if}
         {#if address.line}
             <p>{address.line.join(', ')}</p>
         {/if}
