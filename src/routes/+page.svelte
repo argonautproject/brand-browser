@@ -31,6 +31,9 @@
 <h1>SMART User Access Brands Browser</h1>
 <input class="search" autofocus type="text" placeholder="search" bind:value={searchBoxText} />
 
+{#if brandStore.loading}
+ Loading brand bundles... 
+{/if}
 <div class="cards">
 {#each brandStore.hits as org}
   <Organization organization={org} db={brandStore.db} />

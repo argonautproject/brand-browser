@@ -100,7 +100,6 @@
   .card {
     border: 1px solid lightgray;
     padding: 20px;
-    margin-bottom: 1em;
     min-width: 300px;
     flex-grow: 1;
     background-color: snow;
