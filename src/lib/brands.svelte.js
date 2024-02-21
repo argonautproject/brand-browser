@@ -136,7 +136,7 @@ export default function brands(
   });
 
   let page = $state(0);
-  let query = "";
+  let query = "UNINITIALIZED";
 
   function search({ query: qIn }) {
     untrack(() => {
