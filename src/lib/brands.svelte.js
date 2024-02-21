@@ -60,22 +60,24 @@ export default function brands(
   console.log("Iniitlize brnds");
   let resources = $state({});
   let hits = $state([]);
-  let textIndex = {};
+  let textIndex = [];
 
   let load = async function (source) {
     resources = { ...resources, ...(await fetchBundleAsResourceMap(source)) };
     console.log("REdo res");
     // resources = await fetchBundleAsResourceMap(source);
-    textIndex = Object.fromEntries(
-      Object.entries(resources)
-        .filter(([k, v]) => v.resourceType === "Organization")
-        .map(([k, v]) => [
+    textIndex = 
+      _(resources)
+      .toPairs()
+      .sortBy(([k,v]) => v.name)
+      .filter(([k, v]) => v.resourceType === "Organization")
+      .map(([k, v]) => [
           k,
           `${v.name} ${v.alias?.join(" ")} ${v.address
             ?.map((a) => `${a.city || ""} ${a.state || ""}`)
             .join(" ")}`.toLowerCase(),
-        ])
-    );
+      ])
+      .value();
     search({ query: "" });
   };
 
@@ -105,9 +107,10 @@ export default function brands(
   function nextPage() {
     let probes = query.toLowerCase().split(/\s/) || [];
     page++;
-    let orgs = Object.entries(textIndex)
+    let orgs = textIndex
       .filter(([k, o]) => probes.every((w) => o.includes(w)))
       .slice(0, (page + 1) * PAGE_SIZE);
+
     hits = orgs.map(([k]) => resources[k]);
   }
 
