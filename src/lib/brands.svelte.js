@@ -140,8 +140,10 @@ export default function brands(
 
   function search({ query: qIn }) {
     untrack(() => {
+      const canonicalized = qIn.toLowerCase().trim();
+      if (canonicalized === query) return;
       page = -1;
-      query = qIn;
+      query = canonicalized;
       nextPage();
     });
   }

@@ -3,6 +3,7 @@
   import Organization from "$lib/Organization.svelte";
 
   let searchBoxText = $state("");
+
   let brandStore = getBrandStore({ PAGE_SIZE: 20 });
 
   $effect(() => {
