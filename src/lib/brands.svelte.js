@@ -91,12 +91,12 @@ export default function brands(
     });
   });
 
-  let currentPageNumber = $state(0);
+  let page = $state(0);
   let query = "";
 
   function search({ query: qIn }) {
     untrack(() => {
-      currentPageNumber = -1;
+      page = -1;
       query = qIn;
       nextPage();
     });
@@ -104,19 +104,19 @@ export default function brands(
 
   function nextPage() {
     let probes = query.toLowerCase().split(/\s/) || [];
-    currentPageNumber++;
+    page++;
     let orgs = Object.entries(textIndex)
       .filter(([k, o]) => probes.every((w) => o.includes(w)))
-      .slice(0, (currentPageNumber + 1) * PAGE_SIZE);
+      .slice(0, (page + 1) * PAGE_SIZE);
     hits = orgs.map(([k]) => resources[k]);
   }
 
   return {
     load,
-    get currentPageNumber() {
-      return currentPageNumber;
+    get page() {
+      return page;
     },
-    get resources() {
+    get db() {
       return resources;
     },
     search,

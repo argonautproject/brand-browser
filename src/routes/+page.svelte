@@ -32,5 +32,5 @@
 <input autofocus type="text" placeholder="search" bind:value={searchBoxText} />
 
 {#each brandStore.hits as org}
-  <Organization organization={org} db={brandStore.hits} />
+  <Organization organization={org} db={brandStore.db} />
 {/each}
