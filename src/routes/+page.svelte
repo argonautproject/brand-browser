@@ -27,10 +27,29 @@
   });
 </script>
 
-<h1>SMART User Access Brands</h1>
+<h1>SMART User Access Brands Browser</h1>
+<input class="search" autofocus type="text" placeholder="search" bind:value={searchBoxText} />
 
-<input autofocus type="text" placeholder="search" bind:value={searchBoxText} />
-
+<div class="cards">
 {#each brandStore.hits as org}
   <Organization organization={org} db={brandStore.db} />
 {/each}
+</div>
+
+<style>
+  .cards {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: left;
+    gap: 1em;
+    margin: 1em;
+    width: calc(100% - 2em);
+  }
+
+  input.search {
+    box-sizing: border-box;
+    width: calc(100% - 2em);
+    padding: 0.5em;
+    margin: 1em;
+  }
+</style>

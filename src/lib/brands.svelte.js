@@ -40,7 +40,8 @@ async function fetchBundleAsResourceMap(source) {
     .filter(
       (r) =>
         r[1].resourceType === "Endpoint" ||
-        r[1]?.partOf || r[1]?.extension.some(
+        r[1]?.partOf ||
+        r[1]?.extension.some(
           (e) =>
             e.url ===
               "http://hl7.org/fhir/StructureDefinition/organization-portal" &&
@@ -50,37 +51,44 @@ async function fetchBundleAsResourceMap(source) {
     .fromPairs()
     .value();
 
+  function getPortals(resourceMap, id) {
+    const r = resourceMap[id];
+    const portals = (r.extension || []).filter(
+      (e) =>
+        e.url === "http://hl7.org/fhir/StructureDefinition/organization-portal"
+    );
+    return portals;
+  }
 
-    function getPortals(resourceMap, id) {
-        const r = resourceMap[id];
-        const portals = (r.extension || []).filter(
-          (e) => e.url === "http://hl7.org/fhir/StructureDefinition/organization-portal"
-        );
-        return portals;
-    }
+  function getPortalEndpoints(portals) {
+    return new Set(
+      (Array.isArray(portals) ? portals : [portals]).flatMap((p) =>
+        p.extension
+          ?.filter((e) => e.url === "portalEndpoint")
+          .map((e) => e.valueReference.reference)
+      )
+    );
+  }
 
-    function getPortalEndpoints(portals) {
-        return new Set((Array.isArray(portals) ? portals : [portals]).flatMap(p => p.extension?.filter( (e) => e.url === "portalEndpoint").map((e) => e.valueReference.reference)));
-    }
+  function minus(a, b) {
+    return new Set([...a].filter((x) => !b.has(x)));
+  }
 
-    function minus(a, b) {
-        return new Set([...a].filter(x => !b.has(x)));
-    }
-
-
-    // push down the parent portals to the child, if they offer additional endpoints
+  // push down the parent portals to the child, if they offer additional endpoints
   _(resourceMap).forEach((r, id) => {
     if (r.resourceType === "Organization" && r.partOf) {
-        const myPortals = getPortals(resourceMap, id);
-        const myEndpoints = getPortalEndpoints(myPortals);
-        const parentPortals = getPortals(resourceMap, r.partOf.reference);
-        const portalsToInherit = parentPortals.filter(pp => minus(getPortalEndpoints(pp), myEndpoints).size > 0);
-        for (const p of portalsToInherit) {
-            if (!r.extension) r.extension = []
-            r.extension.push(JSON.parse(JSON.stringify(p)))
-        }
+      const myPortals = getPortals(resourceMap, id);
+      const myEndpoints = getPortalEndpoints(myPortals);
+      const parentPortals = getPortals(resourceMap, r.partOf.reference);
+      const portalsToInherit = parentPortals.filter(
+        (pp) => minus(getPortalEndpoints(pp), myEndpoints).size > 0
+      );
+      for (const p of portalsToInherit) {
+        if (!r.extension) r.extension = [];
+        r.extension.push(JSON.parse(JSON.stringify(p)));
+      }
     }
-  })
+  });
 
   return resourceMap;
 }
@@ -91,33 +99,34 @@ async function fetchBundleAsResourceMap(source) {
 export default function brands(
   { PAGE_SIZE = 10, searchBoxText = "" } = { PAGE_SIZE: 10 }
 ) {
-  console.log("Iniitlize brnds");
   let resources = $state({});
   let hits = $state([]);
   let textIndex = [];
 
   let load = async function (source) {
-    resources = { ...resources, ...(await fetchBundleAsResourceMap(source)) };
-    textIndex = 
-      _(resources)
+    const newResources = await fetchBundleAsResourceMap(source)
+    resources = { ...resources, ...newResources };
+    textIndex = _(resources)
       .toPairs()
-      .sortBy(([k,v]) => v.name)
+      .sortBy(([k, v]) => v.name)
       .filter(([k, v]) => v.resourceType === "Organization")
       .map(([k, v]) => [
-          k,
-          `${v.name} ${v.alias?.join(" ")} ${v.address
-            ?.map((a) => `${a.city || ""} ${a.state || ""}`)
-            .join(" ")}`.toLowerCase(),
+        k,
+        `${v.name} ${v.alias?.join(" ")} ${v.address
+          ?.map((a) => `${a.city || ""} ${a.state || ""}`)
+          .join(" ")}`.toLowerCase(),
       ])
       .value();
   };
 
   $effect(() => {
     untrack(async () => {
-      const bundleUrls = new URLSearchParams(window.location.search).getAll("bundle")
+      const bundleUrls = new URLSearchParams(window.location.search).getAll(
+        "bundle"
+      );
       if (bundleUrls.length === 0) {
-        bundleUrls.push("https://joshuamandel.com/pab-viewer/bundle.json")
-      };
+        bundleUrls.push("https://joshuamandel.com/pab-viewer/bundle.json");
+      }
       try {
         await Promise.allSettled(bundleUrls.map(load));
       } finally {
@@ -143,7 +152,6 @@ export default function brands(
     let orgs = textIndex
       .filter(([k, o]) => probes.every((w) => o.includes(w)))
       .slice(0, (page + 1) * PAGE_SIZE);
-
     hits = orgs.map(([k]) => resources[k]);
   }
 

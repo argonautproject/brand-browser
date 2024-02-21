@@ -18,7 +18,7 @@
   {/if}
 
   <div class="card-content">
-    <h2>{organization?.name}</h2>
+    <h2>{organization?.name} {#if organization?.partOf} (<code>🧩.partOf</code>){/if}</h2>
 
     {#if organization.telecom}
       <a
@@ -67,16 +67,20 @@
         {/each}
 
         <h3>
-          Portal
           {#if portal.extension.find((e) => e.url === "portalName").valueString !== organization?.name}
-            ({portal.extension.find((e) => e.url === "portalName").valueString})
+            {portal.extension.find((e) => e.url === "portalName").valueString}
+            {:else}
+            Portal
           {/if}
         </h3>
+        {#if portal.extension.find(e => e.url === "portalDescription")}
+          <p class="portal-description">{portal.extension.find(e => e.url === "portalDescription").valueMarkdown}</p>
+        {/if}
 
         {#each portal?.extension.filter((e) => e.url === "portalUrl") as e}
           <a href={e?.valueUrl} target="_blank"> Log In </a>
         {:else}
-          Missing Portal URL
+          <p class="missing">(Missing Portal URL)</p>
         {/each}
 
         {#each portal.extension.filter((e) => e.url === "portalEndpoint") as endpoint}
@@ -84,6 +88,8 @@
             FHIR: {db[endpoint.valueReference.reference]?.address ||
               endpoint.valueReference.reference}
           </p>
+        {:else}
+          <p class="missing">(Missing FHIR Endpoint)</p>
         {/each}
       </div>
     {/each}
@@ -94,9 +100,13 @@
   .card {
     border: 1px solid lightgray;
     padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     margin-bottom: 1em;
+    min-width: 300px;
+    flex-grow: 1;
+    background-color: snow;
+    /*shaadow now*/
+    box-shadow: 0 0 3px 0px white;
+    border-radius: 5px;
   }
 
   .card-logo img {
@@ -109,4 +119,9 @@
     border-top: 1px solid lightgray;
     padding-top: 15px;
   }
+
+  .portal-description, .missing{
+    font-style: italic;
+  }
+
 </style>
