@@ -104,7 +104,7 @@ export default function brands(
   let textIndex = [];
 
   let load = async function (source) {
-    const newResources = await fetchBundleAsResourceMap(source)
+    const newResources = await fetchBundleAsResourceMap(source);
     resources = { ...resources, ...newResources };
     textIndex = _(resources)
       .toPairs()
@@ -130,7 +130,7 @@ export default function brands(
       try {
         await Promise.allSettled(bundleUrls.map(load));
       } finally {
-        search({query, force: true});
+        search({ query, force: true });
         initialized = true;
       }
     });
@@ -140,7 +140,7 @@ export default function brands(
   let query = "UNINITIALIZED";
   let initialized = $state(false);
 
-  function search({ query: qIn, force=false }) {
+  function search({ query: qIn, force = false }) {
     untrack(() => {
       const canonicalized = qIn.toLowerCase().trim();
       if (!force && canonicalized === query) return;
@@ -160,8 +160,8 @@ export default function brands(
   }
 
   return {
-    get loading(){
-      return !initialized
+    get loading() {
+      return !initialized;
     },
     load,
     get page() {

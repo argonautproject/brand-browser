@@ -4,9 +4,14 @@
 
   let searchBoxText = $state("");
 
-  let brandStore = getBrandStore({ PAGE_SIZE: 20 });
 
+  let brandStore = getBrandStore({ PAGE_SIZE: 20 });
+  
   $effect(() => {
+    // get the q= search param if any, to populate search box
+    const params = new URLSearchParams(window.location.search);
+    const q = params.get("q");
+    if (q) searchBoxText = q;
     brandStore.search({
       query: searchBoxText,
     });
@@ -28,7 +33,10 @@
   });
 </script>
 
-<h1>SMART User Access Brands Browser</h1>
+<h1>SMART User Access Brands Browser
+<a style="text-decoration: none;" href="./config">⚙️</a>
+
+</h1> 
 <input class="search" autofocus type="text" placeholder="search" bind:value={searchBoxText} />
 
 {#if brandStore.loading}
