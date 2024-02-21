@@ -58,22 +58,28 @@
       </address>
     {/each}
 
-    {#each organization.extension.filter((e) => e.url === "http://hl7.org/fhir/StructureDefinition/organization-portal") as ext}
+    {#each organization.extension.filter((e) => e.url === "http://hl7.org/fhir/StructureDefinition/organization-portal") as portal}
       <div class="portal-info">
+        {#each portal.extension.filter((e) => e.url === "portalLogo") as logo}
+          <div class="card-logo">
+            <img src={logo.valueUrl} alt="Portal Logo" />
+          </div>
+        {/each}
+
         <h3>
           Portal
-          {#if ext.extension.find((e) => e.url === "portalName").valueString !== organization?.name}
-            ({ext.extension.find((e) => e.url === "portalName").valueString})
+          {#if portal.extension.find((e) => e.url === "portalName").valueString !== organization?.name}
+            ({portal.extension.find((e) => e.url === "portalName").valueString})
           {/if}
         </h3>
 
-        {#each ext?.extension.filter((e) => e.url === "portalUrl") as e}
+        {#each portal?.extension.filter((e) => e.url === "portalUrl") as e}
           <a href={e?.valueUrl} target="_blank"> Log In </a>
         {:else}
           Missing Portal URL
         {/each}
 
-        {#each ext.extension.filter((e) => e.url === "portalEndpoint") as endpoint}
+        {#each portal.extension.filter((e) => e.url === "portalEndpoint") as endpoint}
           <p>
             FHIR: {db[endpoint.valueReference.reference]?.address ||
               endpoint.valueReference.reference}

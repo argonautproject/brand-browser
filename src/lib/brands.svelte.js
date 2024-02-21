@@ -4,6 +4,8 @@ import { untrack } from "svelte";
 async function fetchBundleAsResourceMap(source) {
   const bundleResponse = await fetch(source);
   const bundle = await bundleResponse.json();
+
+  // ensure that all references are resolved to full URLs
   const resourceMap = _.chain(bundle.entry)
     .map((r) => {
       const baseUrl = r.fullUrl.replace(
@@ -38,7 +40,7 @@ async function fetchBundleAsResourceMap(source) {
     .filter(
       (r) =>
         r[1].resourceType === "Endpoint" ||
-        r[1]?.extension.some(
+        r[1]?.partOf || r[1]?.extension.some(
           (e) =>
             e.url ===
               "http://hl7.org/fhir/StructureDefinition/organization-portal" &&
@@ -47,6 +49,38 @@ async function fetchBundleAsResourceMap(source) {
     )
     .fromPairs()
     .value();
+
+
+    function getPortals(resourceMap, id) {
+        const r = resourceMap[id];
+        const portals = (r.extension || []).filter(
+          (e) => e.url === "http://hl7.org/fhir/StructureDefinition/organization-portal"
+        );
+        return portals;
+    }
+
+    function getPortalEndpoints(portals) {
+        return new Set((Array.isArray(portals) ? portals : [portals]).flatMap(p => p.extension?.filter( (e) => e.url === "portalEndpoint").map((e) => e.valueReference.reference)));
+    }
+
+    function minus(a, b) {
+        return new Set([...a].filter(x => !b.has(x)));
+    }
+
+
+    // push down the parent portals to the child, if they offer additional endpoints
+  _(resourceMap).forEach((r, id) => {
+    if (r.resourceType === "Organization" && r.partOf) {
+        const myPortals = getPortals(resourceMap, id);
+        const myEndpoints = getPortalEndpoints(myPortals);
+        const parentPortals = getPortals(resourceMap, r.partOf.reference);
+        const portalsToInherit = parentPortals.filter(pp => minus(getPortalEndpoints(pp), myEndpoints).size > 0);
+        for (const p of portalsToInherit) {
+            if (!r.extension) r.extension = []
+            r.extension.push(JSON.parse(JSON.stringify(p)))
+        }
+    }
+  })
 
   return resourceMap;
 }
@@ -64,8 +98,6 @@ export default function brands(
 
   let load = async function (source) {
     resources = { ...resources, ...(await fetchBundleAsResourceMap(source)) };
-    console.log("REdo res");
-    // resources = await fetchBundleAsResourceMap(source);
     textIndex = 
       _(resources)
       .toPairs()
@@ -78,17 +110,18 @@ export default function brands(
             .join(" ")}`.toLowerCase(),
       ])
       .value();
-    search({ query: "" });
   };
 
   $effect(() => {
-    untrack(() => {
+    untrack(async () => {
       const bundleUrls = new URLSearchParams(window.location.search).getAll("bundle")
       if (bundleUrls.length === 0) {
         bundleUrls.push("https://joshuamandel.com/pab-viewer/bundle.json")
       };
-      for (const b of bundleUrls) {
-        load(b);
+      try {
+        await Promise.allSettled(bundleUrls.map(load));
+      } finally {
+        search({ query: "" });
       }
     });
   });
