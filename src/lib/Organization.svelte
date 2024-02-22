@@ -110,6 +110,8 @@
     /*shaadow now*/
     box-shadow: 0 0 3px 0px white;
     border-radius: 5px;
+    overflow: hidden; 
+    overflow-wrap: break-all;
   }
 
   .card-logo img {
