@@ -8,7 +8,7 @@ Choose a data set:
     >
   </li>
   <li>
-    <a href="./?bundle=https://joshuamandel.com/pab-viewer/bundle.json&q=pediatrics"
+    <a href="./?bundle=https://joshuamandel.com/uab-viewer/bundle.json&q=pediatrics"
       >Fasten US Directory</a
     >
   </li>

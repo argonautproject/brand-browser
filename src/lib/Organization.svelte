@@ -2,6 +2,10 @@
   let { organization, db } = $props();
   let maxAddress = 3;
   let allAddress = $state(false);
+  function handleError(event) {
+    event.target.src = `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='1024' height='1024'><path d='M0 0h1024v1024H0z' style='fill:%23eee'/><text x='40' y='170' style='font-size:150px'>broken img :/</text></svg>`;
+  }
+
 </script>
 
 <div class="card">
@@ -10,7 +14,7 @@
       {#if ext.url === "http://hl7.org/fhir/StructureDefinition/organization-brand"}
         {#each ext.extension.filter((e) => e.url === "brandLogo") as logo}
           <div class="card-logo">
-            <img src={logo.valueUrl} alt="Organization Logo" />
+            <img src={logo.valueUrl} alt="Organization Logo" on:error={handleError}/>
           </div>
         {/each}
       {/if}
@@ -62,7 +66,7 @@
       <div class="portal-info">
         {#each portal.extension.filter((e) => e.url === "portalLogo") as logo}
           <div class="card-logo">
-            <img src={logo.valueUrl} alt="Portal Logo" />
+            <img src={logo.valueUrl} alt="Portal Logo" on:error={handleError}/>
           </div>
         {/each}
 

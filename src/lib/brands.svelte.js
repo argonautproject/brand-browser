@@ -125,7 +125,7 @@ export default function brands(
         "bundle"
       );
       if (bundleUrls.length === 0) {
-        bundleUrls.push("https://joshuamandel.com/pab-viewer/bundle.json");
+        bundleUrls.push("https://joshuamandel.com/uab-viewer/bundle.json");
       }
       try {
         await Promise.allSettled(bundleUrls.map(load));
@@ -175,5 +175,16 @@ export default function brands(
     get hits() {
       return hits;
     },
+    get snapshot(){
+      return {
+        resourceType: "Bundle",
+        type: "collection",
+        timestamp: new Date().toISOString(),
+        entry: _(resources).toPairs().map(([k, v]) => ({
+          fullUrl: k,
+          resource: v,
+        })).value()
+      };
+    }
   };
 }
