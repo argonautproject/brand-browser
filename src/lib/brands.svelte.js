@@ -119,7 +119,12 @@ export default function brands(
       .value();
   };
 
-  $effect(() => {
+
+  async function initialize() {
+    initialized = false;
+    resources = {};
+    hits = []
+    textIndex = [];
     untrack(async () => {
       const bundleUrls = new URLSearchParams(window.location.search).getAll(
         "bundle"
@@ -134,20 +139,18 @@ export default function brands(
         initialized = true;
       }
     });
-  });
+  }
 
   let page = $state(0);
   let query = "UNINITIALIZED";
   let initialized = $state(false);
 
   function search({ query: qIn, force = false }) {
-    untrack(() => {
-      const canonicalized = qIn.toLowerCase().trim();
-      if (!force && canonicalized === query) return;
-      page = -1;
-      query = canonicalized;
-      nextPage();
-    });
+    const canonicalized = qIn.toLowerCase().trim();
+    if (!force && canonicalized === query) return;
+    page = -1;
+    query = canonicalized;
+    nextPage();
   }
 
   function nextPage() {
@@ -160,6 +163,7 @@ export default function brands(
   }
 
   return {
+    initialize,
     get loading() {
       return !initialized;
     },
