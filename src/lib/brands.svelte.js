@@ -128,9 +128,6 @@ export default function brands(
     resources = {};
     hits = [];
     textIndex = [];
-    if (bundleUrls.length + inline.length === 0) {
-      bundleUrls.push("https://brand-browser.argo.run/bundle.json");
-    }
     try {
       await Promise.allSettled(bundleUrls.concat(inline).map(load));
     } finally {
