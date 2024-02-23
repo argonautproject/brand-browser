@@ -62,7 +62,7 @@
       <a
         style="text-decoration: none; cursor: pointer;"
         title={"Download snapshot Bundle (alt + d)"}
-        on:click={downloadBundleSnapshot}>💾 {numResources} resources</a
+        on:click={downloadBundleSnapshot}>💾 {numResources} resource{#if numResources !== 1}s{/if}</a
       ></span
     >
   {/if}

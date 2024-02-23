@@ -71,17 +71,17 @@
         {/each}
 
         <h3>
-          {#if portal.extension.find((e) => e.url === "portalName").valueString !== organization?.name}
-            {portal.extension.find((e) => e.url === "portalName").valueString}
+          {#if ![organization?.name, undefined].includes(portal?.extension?.find((e) => e.url === "portalName")?.valueString)}
+            {portal.extension?.find((e) => e.url === "portalName")?.valueString}
             {:else}
             Portal
           {/if}
         </h3>
-        {#if portal.extension.find(e => e.url === "portalDescription")}
+        {#if portal?.extension?.find(e => e.url === "portalDescription")}
           <p class="portal-description">{portal.extension.find(e => e.url === "portalDescription").valueMarkdown}</p>
         {/if}
 
-        {#each portal?.extension.filter((e) => e.url === "portalUrl") as e}
+        {#each portal?.extension?.filter((e) => e.url === "portalUrl") as e}
           <a href={e?.valueUrl} target="_blank"> Log In </a>
         {:else}
           <p class="missing">(Missing Portal URL)</p>
