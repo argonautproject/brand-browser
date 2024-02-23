@@ -8,7 +8,7 @@ Choose a data set:
     >
   </li>
   <li>
-    <a href="./?bundle=https://joshuamandel.com/brand-browser/bundle.json&q=pediatrics"
+    <a href="./?bundle=https://brand-browser.argo.run/bundle.json&q=pediatrics"
       >Fasten US Directory</a
     >
   </li>
