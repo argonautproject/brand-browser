@@ -16,7 +16,7 @@
       if ($page.url.searchParams.has("inboundBundle")) {
         brandStore.initialize({inline: [parseInt($page.url.searchParams.get("inboundBundle"))]});
       } else {
-        brandStore.initialize({urls: b});
+        brandStore.initialize({bundleUrls: b});
       }
       const q = $page.url.searchParams.get("q");
       if (q) searchBoxText = q;
