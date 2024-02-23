@@ -119,26 +119,23 @@ export default function brands(
       .value();
   };
 
-
-  async function initialize() {
+  /**
+   * @param {string[]} bundleUrls
+   */
+  async function initialize(bundleUrls) {
     initialized = false;
     resources = {};
-    hits = []
+    hits = [];
     textIndex = [];
-    untrack(async () => {
-      const bundleUrls = new URLSearchParams(window.location.search).getAll(
-        "bundle"
-      );
-      if (bundleUrls.length === 0) {
-        bundleUrls.push("https://joshuamandel.com/uab-viewer/bundle.json");
-      }
-      try {
-        await Promise.allSettled(bundleUrls.map(load));
-      } finally {
-        search({ query, force: true });
-        initialized = true;
-      }
-    });
+    if (bundleUrls.length === 0) {
+      bundleUrls.push("https://joshuamandel.com/uab-viewer/bundle.json");
+    }
+    try {
+      await Promise.allSettled(bundleUrls.map(load));
+    } finally {
+      search({ query, force: true });
+      initialized = true;
+    }
   }
 
   let page = $state(0);
@@ -179,16 +176,19 @@ export default function brands(
     get hits() {
       return hits;
     },
-    get snapshot(){
+    get snapshot() {
       return {
         resourceType: "Bundle",
         type: "collection",
         timestamp: new Date().toISOString(),
-        entry: _(resources).toPairs().map(([k, v]) => ({
-          fullUrl: k,
-          resource: v,
-        })).value()
+        entry: _(resources)
+          .toPairs()
+          .map(([k, v]) => ({
+            fullUrl: k,
+            resource: v,
+          }))
+          .value(),
       };
-    }
+    },
   };
 }

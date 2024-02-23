@@ -1,5 +1,8 @@
 <script>
   import Organization from "$lib/Organization.svelte";
+  import { pushState } from "$app/navigation";
+  import * as nav from "$app/navigation";
+  import { page, navigating } from "$app/stores";
 
   import { getContext, untrack } from "svelte";
   /** @type {ReturnType<import('$lib/brands.svelte').default>} */
@@ -8,16 +11,23 @@
   let searchBoxText = $state("");
 
   $effect(() => {
-    untrack(async function(){
-      brandStore.initialize()
-      const params = new URLSearchParams(window.location.search);
-      const q = params.get("q");
+    untrack(async function () {
+      const b = $page.url.searchParams.getAll("bundle");
+      brandStore.initialize(b);
+      const q = $page.url.searchParams.get("q");
       if (q) searchBoxText = q;
-    })
-  })
+    });
+  });
 
   $effect(() => {
-    // get the q= search param if any, to populate search box
+    const newP = new URLSearchParams(window.location.search);
+    if (searchBoxText !== newP.get("q")) {
+      newP.set("q", searchBoxText);
+      nav.replaceState("?" + newP.toString(), {});
+    }
+  });
+
+  $effect(() => {
     brandStore.search({
       query: searchBoxText,
     });
@@ -37,7 +47,6 @@
       window.removeEventListener("scroll", onScroll);
     };
   });
-
 </script>
 
 <input
