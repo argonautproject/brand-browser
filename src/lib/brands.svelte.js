@@ -128,7 +128,7 @@ export default function brands(
     hits = [];
     textIndex = [];
     if (bundleUrls.length === 0) {
-      bundleUrls.push("https://joshuamandel.com/uab-viewer/bundle.json");
+      bundleUrls.push("https://joshuamandel.com/brand-browser/bundle.json");
     }
     try {
       await Promise.allSettled(bundleUrls.map(load));

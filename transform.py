@@ -155,14 +155,14 @@ def main(directory_path):
     for brand_id, brand in brands_content.items():
         organization = create_organization_adjusted(brand, portals_content)
         brand_bundle["entry"].append({
-            "fullUrl": f"https://jmandel.github.io/uab-viewer/Organization/{organization['id']}",
+            "fullUrl": f"https://brand-browser.argo.run/Organization/{organization['id']}",
             "resource": organization
         })
 
     for endpoint_id, endpoint in endpoints_content.items():
         endpoint_resource = create_endpoint(endpoint)
         brand_bundle["entry"].append({
-            "fullUrl": f"https://jmandel.github.io/uab-viewer/Endpoint/{endpoint_resource['id']}",
+            "fullUrl": f"https://brand-browser.argo.run/Endpoint/{endpoint_resource['id']}",
             "resource": endpoint_resource})
 
     print(json.dumps(brand_bundle, indent=2))
