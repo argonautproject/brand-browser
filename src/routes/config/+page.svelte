@@ -1,4 +1,5 @@
 <script>
+  import { goto } from "$app/navigation";
   import {page} from "$app/stores";
   import { getContext, untrack } from "svelte";
   /** @type {ReturnType<import('$lib/brands.svelte').default>} */
@@ -16,6 +17,7 @@
     const receive = (e) => {
       if (e.data === "done") {
         window.removeEventListener("message", receive)
+        goto(`./?inboundBundle=${inboundBundle}`)
         return;
       }
       inboundBundle = brandStore.register(e.data);
