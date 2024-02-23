@@ -13,7 +13,11 @@
   $effect(() => {
     untrack(async function () {
       const b = $page.url.searchParams.getAll("bundle");
-      brandStore.initialize(b);
+      if ($page.url.searchParams.has("inboundBundle")) {
+        brandStore.initialize({inline: [parseInt($page.url.searchParams.get("inboundBundle"))]});
+      } else {
+        brandStore.initialize({urls: b});
+      }
       const q = $page.url.searchParams.get("q");
       if (q) searchBoxText = q;
     });

@@ -1,9 +1,11 @@
 import _ from "lodash";
 import { untrack } from "svelte";
 
-async function fetchBundleAsResourceMap(source) {
-  const bundleResponse = await fetch(source);
-  const bundle = await bundleResponse.json();
+/** @param {string | Record<string, any>} source */
+async function fetchBundleAsResourceMap(source, inlineBundles = new Map()) {
+  console.log("fetchBundleAsResourceMap", source, inlineBundles);
+  const bundle =
+    typeof source === "string" ? await (await fetch(source)).json() : inlineBundles.get(source);
 
   // ensure that all references are resolved to full URLs
   const resourceMap = _.chain(bundle.entry)
@@ -44,10 +46,7 @@ async function fetchBundleAsResourceMap(source) {
         r[1]?.extension.some(
           (e) =>
             e.url ===
-              "http://hl7.org/fhir/StructureDefinition/organization-portal" &&
-            e.extension?.some((e) => e.url === "portalEndpoint")
-        )
-    )
+              "http://hl7.org/fhir/StructureDefinition/organization-portal"))
     .fromPairs()
     .value();
 
@@ -104,7 +103,7 @@ export default function brands(
   let textIndex = [];
 
   let load = async function (source) {
-    const newResources = await fetchBundleAsResourceMap(source);
+    const newResources = await fetchBundleAsResourceMap(source, inlineBundles);
     resources = { ...resources, ...newResources };
     textIndex = _(resources)
       .toPairs()
@@ -120,18 +119,20 @@ export default function brands(
   };
 
   /**
-   * @param {string[]} bundleUrls
+   * @param {Object} params - The parameters for initialization
+   * @param {Array<string>} params.bundleUrls - The URLs of the bundles to load
+   * @param {Array<any>} params.inline - Inline data to use
    */
-  async function initialize(bundleUrls) {
+  async function initialize({ bundleUrls = [], inline=[] }) {
     initialized = false;
     resources = {};
     hits = [];
     textIndex = [];
-    if (bundleUrls.length === 0) {
+    if (bundleUrls.length + inline.length === 0) {
       bundleUrls.push("https://brand-browser.argo.run/bundle.json");
     }
     try {
-      await Promise.allSettled(bundleUrls.map(load));
+      await Promise.allSettled(bundleUrls.concat(inline).map(load));
     } finally {
       search({ query, force: true });
       initialized = true;
@@ -141,6 +142,8 @@ export default function brands(
   let page = $state(0);
   let query = "UNINITIALIZED";
   let initialized = $state(false);
+
+  let inlineBundles = new Map()
 
   function search({ query: qIn, force = false }) {
     const canonicalized = qIn.toLowerCase().trim();
@@ -173,6 +176,11 @@ export default function brands(
     },
     search,
     nextPage,
+    register(bundle) {
+      let bid = inlineBundles.size
+      inlineBundles.set(bid, bundle)
+      return bid
+    },
     get hits() {
       return hits;
     },
