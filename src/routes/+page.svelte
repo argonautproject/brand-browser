@@ -3,7 +3,7 @@
   import * as nav from "$app/navigation";
   import { page } from "$app/stores";
 
-  import { getContext, untrack } from "svelte";
+  import { getContext, tick, untrack } from "svelte";
   /** @type {ReturnType<import('$lib/brands.svelte').default>} */
   let brandStore = getContext("brandStore");
 
@@ -13,11 +13,15 @@
     untrack(async function () {
       const b = $page.url.searchParams.getAll("bundle");
       if ($page.url.searchParams.has("inboundBundle")) {
-        brandStore.initialize({inline: [parseInt($page.url.searchParams.get("inboundBundle"))]});
-      } else if (b.length){
-        brandStore.initialize({bundleUrls: b});
+        brandStore.initialize({
+          bundleUrls: [],
+          inline: [parseInt($page.url.searchParams.get("inboundBundle"))],
+        });
+      } else if (b.length) {
+        brandStore.initialize({ bundleUrls: b, inline: []});
       } else {
-        nav.goto("./config")
+        nav.goto("config", { replaceState: true });
+        return;
       }
       const q = $page.url.searchParams.get("q");
       if (q) searchBoxText = q;
@@ -26,9 +30,9 @@
 
   $effect(() => {
     const newP = new URLSearchParams(window.location.search);
-    if (searchBoxText !== newP.get("q")) {
+    if (searchBoxText && searchBoxText !== newP.get("q")) {
       newP.set("q", searchBoxText);
-      nav.goto("?" + newP.toString(),{replaceState: true})
+      nav.goto("?" + newP.toString(), { replaceState: true });
     }
   });
 
