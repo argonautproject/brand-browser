@@ -82,6 +82,13 @@
           <img src={logo.valueUrl} alt="Portal Logo" on:error={handleError} />
         {/each}
       </div>
+      
+      {#each portal?.extension?.filter((e) => e.url === "portalUrl") as e}
+        <a href={e?.valueUrl} target="_blank"> Log In </a>
+      {:else}
+        <p class="missing">(Missing Portal URL)</p>
+      {/each}
+
 
       {#if portal?.extension?.find((e) => e.url === "portalDescription")}
         <p class="portal-description">
@@ -89,12 +96,6 @@
             .valueMarkdown}
         </p>
       {/if}
-
-      {#each portal?.extension?.filter((e) => e.url === "portalUrl") as e}
-        <a href={e?.valueUrl} target="_blank"> Log In </a>
-      {:else}
-        <p class="missing">(Missing Portal URL)</p>
-      {/each}
 
       {#each portal.extension.filter((e) => e.url === "portalEndpoint") as endpoint}
         <p>
