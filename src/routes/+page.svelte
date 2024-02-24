@@ -1,8 +1,7 @@
 <script>
   import Organization from "$lib/Organization.svelte";
-  import { pushState } from "$app/navigation";
   import * as nav from "$app/navigation";
-  import { page, navigating } from "$app/stores";
+  import { page } from "$app/stores";
 
   import { getContext, untrack } from "svelte";
   /** @type {ReturnType<import('$lib/brands.svelte').default>} */
@@ -29,7 +28,7 @@
     const newP = new URLSearchParams(window.location.search);
     if (searchBoxText !== newP.get("q")) {
       newP.set("q", searchBoxText);
-      nav.replaceState("?" + newP.toString(), {});
+      nav.goto("?" + newP.toString(),{replaceState: true})
     }
   });
 
@@ -59,7 +58,7 @@
   class="search"
   autofocus
   type="text"
-  placeholder="search"
+  placeholder="search (alt + /)"
   bind:value={searchBoxText}
 />
 

@@ -31,9 +31,13 @@
   $effect(() => {
     const onKeydown = (e) => {
       if (e.altKey) {
-        if (e.key === "/") {
+        if (e.key === "c") {
           e.preventDefault();
           goto("./config");
+        }
+        if (e.key === "/") {
+          e.preventDefault();
+          document.querySelector(".search").focus();
         }
         if (e.key === "d") {
           e.preventDefault();
@@ -57,7 +61,7 @@
       <a
         style="text-decoration: none;"
         href="./config"
-        title={"Settings (alt + /)"}>⚙️</a
+        title={"Config (alt + c)"}>⚙️</a
       >
       <a
         style="text-decoration: none; cursor: pointer;"
