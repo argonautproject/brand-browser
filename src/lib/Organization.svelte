@@ -10,24 +10,24 @@
 <div class="card">
   <h2>
     {organization?.name}
-    {#if organization?.partOf}
+    {#if organization?.partOf && db[organization.partOf.reference]?.extension?.find((e) => e.url === "http://hl7.org/fhir/StructureDefinition/organization-brand" || e.url === "http://hl7.org/fhir/StructureDefinition/organization-portal")}
       (<code>🧩.partOf</code>){/if}
   </h2>
-  {#if organization.extension}
-    {#each organization.extension as ext}
-      {#if ext.url === "http://hl7.org/fhir/StructureDefinition/organization-brand"}
-        {#each ext.extension.filter((e) => e.url === "brandLogo") as logo}
-          <div class="card-logo">
+  <div class="card-logo">
+    {#if organization.extension}
+      {#each organization.extension as ext}
+        {#if ext.url === "http://hl7.org/fhir/StructureDefinition/organization-brand"}
+          {#each ext.extension.filter((e) => e.url === "brandLogo") as logo}
             <img
               src={logo.valueUrl}
               alt="Organization Logo"
               on:error={handleError}
             />
-          </div>
-        {/each}
-      {/if}
-    {/each}
-  {/if}
+          {/each}
+        {/if}
+      {/each}
+    {/if}
+  </div>
 
   {#if organization.telecom}
     <a
@@ -82,13 +82,12 @@
           <img src={logo.valueUrl} alt="Portal Logo" on:error={handleError} />
         {/each}
       </div>
-      
+
       {#each portal?.extension?.filter((e) => e.url === "portalUrl") as e}
         <a href={e?.valueUrl} target="_blank"> Log In </a>
       {:else}
         <p class="missing">(Missing Portal URL)</p>
       {/each}
-
 
       {#if portal?.extension?.find((e) => e.url === "portalDescription")}
         <p class="portal-description">
@@ -132,10 +131,12 @@
     flex-grow: 1;
   }
 
+  .card-logo {
+    height: 150px;
+  }
   .card-logo img {
     max-width: 150px;
     max-height: 150px;
-    height: 150px;
   }
 
   .portal-info {
