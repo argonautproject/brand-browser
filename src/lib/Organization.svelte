@@ -98,7 +98,7 @@
 
       {#each portal.extension.filter((e) => e.url === "portalEndpoint") as endpoint}
         <p>
-          FHIR URL Address: {db[endpoint.valueReference.reference]?.address ||
+          FHIR Base URL: {db[endpoint.valueReference.reference]?.address ||
             endpoint.valueReference.reference}
         </p>
       {:else}
