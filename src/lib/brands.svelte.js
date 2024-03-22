@@ -28,7 +28,8 @@ async function fetchBundleAsResourceMap(source, inlineBundles = new Map()) {
           if (
             k === "reference" &&
             typeof v === "string" &&
-            v.indexOf("http") !== 0
+            v.indexOf("http") !== 0 &&
+            v.indexOf("urn:") !== 0
           ) {
             return baseUrl + v;
           } else {
