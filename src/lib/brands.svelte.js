@@ -44,12 +44,14 @@ async function fetchBundleAsResourceMap(source, inlineBundles = new Map()) {
       (r) =>
         r[1].resourceType === "Endpoint" ||
         r[1]?.partOf ||
-        r[1]?.extension.some(
+        r[1]?.endpoint?.length > 0 ||
+        r[1]?.extension?.some(
           (e) =>
             e.url ===
               "http://hl7.org/fhir/StructureDefinition/organization-portal"))
     .fromPairs()
     .value();
+
 
   function getPortals(resourceMap, id) {
     const r = resourceMap[id];

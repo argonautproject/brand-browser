@@ -68,7 +68,7 @@
   {/each}
 
   <div class="pre-portals"></div>
-  {#each organization.extension.filter((e) => e.url === "http://hl7.org/fhir/StructureDefinition/organization-portal") as portal}
+  {#each organization.extension?.filter((e) => e.url === "http://hl7.org/fhir/StructureDefinition/organization-portal") as portal}
     <div class="portal-info">
       <h3>
         {#if ![organization?.name, undefined].includes(portal?.extension?.find((e) => e.url === "portalName")?.valueString)}
