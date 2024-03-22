@@ -31,10 +31,10 @@
 
   {#if organization.telecom}
     <a
-      href={organization.telecom.find((t) => t.system === "url").value}
+      href={organization.telecom.find((t) => t.system === "url")?.value}
       target="_blank"
     >
-      {organization.telecom.find((t) => t.system === "url").value}
+      {organization.telecom.find((t) => t.system === "url")?.value || "unknown phone number"}
     </a>
   {/if}
 
